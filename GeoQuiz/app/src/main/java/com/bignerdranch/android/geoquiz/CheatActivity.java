@@ -12,9 +12,11 @@ public class CheatActivity extends AppCompatActivity {
 
     private static final String EXTRA_ANSWER_IS_TRUE = "com.bignerdranch.android.geoquiz.answer_is_true";
     private static final String EXTRA_ANSWER_SHOWN = "com.bignerdranch.android.geoquiz.answer_shown";
+    private static final String KEY_ANSWER_TRUE = "answer";
     private boolean mAnswerIsTrue;
     private TextView mAnswerTextView;
     private Button mShowAnswer;
+
 
     public static Intent newIntent(Context packageContext, boolean answerIsTrue) {
         Intent i = new Intent(packageContext, CheatActivity.class);
@@ -35,18 +37,29 @@ public class CheatActivity extends AppCompatActivity {
 
         mAnswerTextView = (TextView) findViewById(R.id.answer_text_view);
 
+        if (savedInstanceState != null) {
+            mAnswerIsTrue = savedInstanceState.getBoolean(KEY_ANSWER_TRUE, false);
+            update_Show_Answer();
+        }
+
         mShowAnswer = (Button) findViewById(R.id.show_answer_button);
         mShowAnswer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mAnswerIsTrue) {
-                    mAnswerTextView.setText(R.string.true_button);
-                } else {
-                    mAnswerTextView.setText(R.string.false_button);
-                }
-                setAnswerShownResult(true);
+                update_Show_Answer();
             }
         });
+
+
+    }
+
+    private void update_Show_Answer(){
+        if (mAnswerIsTrue) {
+            mAnswerTextView.setText(R.string.true_button);
+        } else {
+            mAnswerTextView.setText(R.string.false_button);
+        }
+        setAnswerShownResult(true);
     }
 
     private void setAnswerShownResult(boolean isAnswerShown) {
@@ -55,4 +68,10 @@ public class CheatActivity extends AppCompatActivity {
         setResult(RESULT_OK, data);
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(KEY_ANSWER_TRUE, mAnswerIsTrue);
+    }
 }

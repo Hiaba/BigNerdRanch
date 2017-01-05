@@ -1,7 +1,6 @@
 package com.bignerdranch.android.beatbox;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +25,7 @@ public class BeatBoxFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         mBeatBox = new BeatBox(getActivity());
     }
 
@@ -40,7 +40,13 @@ public class BeatBoxFragment extends Fragment {
         return view;
     }
 
-    private class SoundHolder extends RecyclerView.ViewHolder {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mBeatBox.release();
+    }
+
+    private class SoundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Button mButton;
 
         private Sound mSound;
@@ -49,11 +55,17 @@ public class BeatBoxFragment extends Fragment {
             super(inflater.inflate(R.layout.list_item_sound, container, false));
 
             mButton = (Button) itemView.findViewById(R.id.list_item_sound_button);
+            mButton.setOnClickListener(this);
         }
 
         public void bindSound(Sound sound){
             mSound = sound;
             mButton.setText(mSound.getName());
+        }
+
+        @Override
+        public void onClick(View view) {
+            mBeatBox.play(mSound);
         }
     }
 
